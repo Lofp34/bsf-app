@@ -6,8 +6,9 @@ import { requireSessionUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
 
 export async function POST(request: Request) {
+  let user;
   try {
-    await requireSessionUser([UserRole.SUPER_ADMIN, UserRole.ADMIN]);
+    user = await requireSessionUser([UserRole.SUPER_ADMIN, UserRole.ADMIN]);
   } catch (error) {
     return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   }
@@ -20,6 +21,9 @@ export async function POST(request: Request) {
   }
 
   const { email, memberId, role } = parsed.data;
+  if (role === UserRole.SUPER_ADMIN && user.role !== UserRole.SUPER_ADMIN) {
+    return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
+  }
   const token = generateToken(24);
   const tokenHash = hashToken(token);
 
