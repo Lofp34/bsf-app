@@ -43,6 +43,10 @@ MVP mobile-first pour l'annuaire, les recommandations, les evenements et les cla
 - `npm run lint`: lint
 - `npm test`: validations Prisma + schemas zod + RBAC
 
+## Import Excel (MVP)
+- UI: page `app/admin` (Super Admin uniquement).
+- API: `POST /api/admin/import-members` (multipart form-data, champ `file`).
+
 ## Deploiement Vercel + Neon
 1. Deployer sans `DATABASE_URL` (migration skippee).
 2. Connecter l'integration Neon et definir `DATABASE_URL` (et `DIRECT_URL`).
