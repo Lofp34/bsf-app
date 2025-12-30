@@ -58,7 +58,7 @@ export async function PATCH(
     actorUserId: user.id,
     action: isDeactivate ? "USER_DEACTIVATED" : "USER_ACTIVATED",
     targetUserId: target.id,
-    metadata: { email: target.authEmail },
+    metadata: { email: target.authEmail, memberId: target.memberId },
   });
 
   return NextResponse.json({ ok: true });

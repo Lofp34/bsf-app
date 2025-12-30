@@ -42,7 +42,7 @@ export async function POST(request: Request) {
   await logAudit({
     actorUserId: user.id,
     action: "INVITATION_CREATED",
-    metadata: { invitationId: invitation.id, email, role },
+    metadata: { invitationId: invitation.id, email, role, memberId },
   });
 
   return NextResponse.json({

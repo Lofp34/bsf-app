@@ -54,7 +54,11 @@ export async function POST(
   await logAudit({
     actorUserId: user.id,
     action: "INVITATION_RESENT",
-    metadata: { invitationId: invitation.id, email: invitation.email },
+    metadata: {
+      invitationId: invitation.id,
+      email: invitation.email,
+      memberId: invitation.memberId,
+    },
   });
 
   return NextResponse.json({

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { acceptInviteSchema } from "@/lib/validation";
 import { hashPassword } from "@/lib/auth";
 import { hashToken } from "@/lib/crypto";
+import { logAudit } from "@/lib/audit";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
 
   const passwordHash = await hashPassword(password);
 
-  await prisma.$transaction([
+  const [createdUser] = await prisma.$transaction([
     prisma.user.create({
       data: {
         memberId: invitation.memberId,
@@ -53,6 +54,17 @@ export async function POST(request: Request) {
       data: { acceptedAt: new Date() },
     }),
   ]);
+
+  await logAudit({
+    actorUserId: createdUser.id,
+    action: "INVITATION_ACCEPTED",
+    metadata: {
+      invitationId: invitation.id,
+      memberId: invitation.memberId,
+      email: invitation.email,
+      role: invitation.role,
+    },
+  });
 
   return NextResponse.json({ ok: true });
 }

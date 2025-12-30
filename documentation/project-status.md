@@ -65,8 +65,8 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour pi
 - 2025-12-30: stabilisation Vercel (DIRECT_URL + retry migrations) et merge de l'admin MVP.
 
 ## Prochaine etape (proposee)
-1) Pagination + export CSV sur les listes admin. (en cours)
-2) Historique des modifications par membre (audit detaille).
+1) Pagination + export CSV sur les listes admin.
+2) Historique des modifications par membre (audit detaille). (en cours)
 3) CRUD evenements (creation/edition) avec roles.
 4) Notifications (email) pour invitations.
 5) Tableau de bord KPI plus riche (tendances, activite).
