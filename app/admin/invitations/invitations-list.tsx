@@ -32,6 +32,7 @@ export default function InvitationsList({ invitations }: Props) {
   const [inviteLink, setInviteLink] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
   const now = useMemo(() => new Date(), []);
 
@@ -63,6 +64,7 @@ export default function InvitationsList({ invitations }: Props) {
 
   async function handleResend(invitationId: string) {
     setError(null);
+    setMessage(null);
     setActionId(invitationId);
     setInviteLink((prev) => ({ ...prev, [invitationId]: "" }));
 
@@ -77,8 +79,12 @@ export default function InvitationsList({ invitations }: Props) {
       return;
     }
 
-    const link = `${window.location.origin}/accept-invite?token=${data.token}`;
-    setInviteLink((prev) => ({ ...prev, [invitationId]: link }));
+    if (data.inviteUrl) {
+      setInviteLink((prev) => ({ ...prev, [invitationId]: data.inviteUrl }));
+    } else {
+      setInviteLink((prev) => ({ ...prev, [invitationId]: "" }));
+      setMessage("Email envoye.");
+    }
     setCopiedId(null);
     setActionId(null);
   }
@@ -137,6 +143,11 @@ export default function InvitationsList({ invitations }: Props) {
       {error && (
         <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
+        </div>
+      )}
+      {message && (
+        <div className="rounded-2xl border border-[var(--stroke)] bg-[var(--card)] px-4 py-3 text-sm text-[var(--muted)]">
+          {message}
         </div>
       )}
 

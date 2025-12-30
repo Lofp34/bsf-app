@@ -13,7 +13,8 @@ type MemberOption = {
 type InvitationResult = {
   ok: boolean;
   invitationId: string;
-  token: string;
+  emailSent: boolean;
+  inviteUrl: string | null;
 };
 
 type Props = {
@@ -77,8 +78,7 @@ export default function InviteUserForm({ members, canInviteSuperAdmin }: Props) 
       return;
     }
 
-    const url = `${window.location.origin}/accept-invite?token=${data.token}`;
-    setInviteUrl(url);
+    setInviteUrl(data.inviteUrl ?? null);
     setResult(data);
     setLoading(false);
   }
@@ -195,27 +195,33 @@ export default function InviteUserForm({ members, canInviteSuperAdmin }: Props) 
           </p>
         )}
 
-        {result && inviteUrl && (
+        {result && (
           <div className="rounded-2xl border border-[var(--stroke)] bg-[var(--card)] px-4 py-3 text-sm">
             <p className="text-[var(--ink)]">
-              Invitation generee. Transmettez ce lien de creation de compte.
+              {result.emailSent
+                ? "Invitation envoyee par email."
+                : "Email indisponible. Transmettez le lien manuellement."}
             </p>
-            <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
-              <span className="flex-1 break-all rounded-xl border border-[var(--stroke)] bg-white px-3 py-2 text-xs text-[var(--muted)]">
-                {inviteUrl}
-              </span>
-              <button
-                type="button"
-                onClick={handleCopyInvite}
-                className="rounded-2xl bg-[var(--accent)] px-5 py-2 text-xs uppercase tracking-[0.3em] text-white transition hover:bg-[var(--accent-deep)]"
-              >
-                Copier
-              </button>
-            </div>
-            {copyStatus && (
-              <p className="mt-2 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-                {copyStatus}
-              </p>
+            {inviteUrl && (
+              <>
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <span className="flex-1 break-all rounded-xl border border-[var(--stroke)] bg-white px-3 py-2 text-xs text-[var(--muted)]">
+                    {inviteUrl}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyInvite}
+                    className="rounded-2xl bg-[var(--accent)] px-5 py-2 text-xs uppercase tracking-[0.3em] text-white transition hover:bg-[var(--accent-deep)]"
+                  >
+                    Copier
+                  </button>
+                </div>
+                {copyStatus && (
+                  <p className="mt-2 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+                    {copyStatus}
+                  </p>
+                )}
+              </>
             )}
           </div>
         )}

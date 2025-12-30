@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireSessionUser } from "@/lib/auth";
 import { generateToken, hashToken } from "@/lib/crypto";
+import { getInviteUrl, sendInvitationEmail } from "@/lib/email";
 import { logAudit } from "@/lib/audit";
 import { UserRole } from "@prisma/client";
 
@@ -34,7 +35,7 @@ export async function POST(
   const token = generateToken(24);
   const tokenHash = hashToken(token);
 
-  await prisma.$transaction([
+  const [newInvitation] = await prisma.$transaction([
     prisma.invitation.update({
       where: { id: invitation.id },
       data: { expireAt: new Date() },
@@ -51,11 +52,16 @@ export async function POST(
     }),
   ]);
 
+  const emailResult = await sendInvitationEmail({
+    to: invitation.email,
+    token,
+  });
+
   await logAudit({
     actorUserId: user.id,
     action: "INVITATION_RESENT",
     metadata: {
-      invitationId: invitation.id,
+      invitationId: newInvitation.id,
       email: invitation.email,
       memberId: invitation.memberId,
     },
@@ -63,6 +69,7 @@ export async function POST(
 
   return NextResponse.json({
     ok: true,
-    token,
+    emailSent: emailResult.ok,
+    inviteUrl: emailResult.ok ? null : getInviteUrl(token),
   });
 }

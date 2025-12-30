@@ -51,3 +51,7 @@ MVP mobile-first pour l'annuaire, les recommandations, les evenements et les cla
 1. Deployer sans `DATABASE_URL` (migration skippee).
 2. Connecter l'integration Neon et definir `DATABASE_URL` (et `DIRECT_URL`).
 3. Redeployer pour appliquer `prisma migrate deploy`.
+
+## Emails d'invitation
+- Definir `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`, `APP_URL`.
+- Si non configures, un lien d'invitation est retourne a l'admin.

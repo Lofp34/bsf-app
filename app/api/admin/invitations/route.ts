@@ -4,6 +4,7 @@ import { invitationSchema } from "@/lib/validation";
 import { hashToken, generateToken } from "@/lib/crypto";
 import { requireSessionUser } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
+import { getInviteUrl, sendInvitationEmail } from "@/lib/email";
 import { UserRole } from "@prisma/client";
 
 export async function POST(request: Request) {
@@ -39,6 +40,11 @@ export async function POST(request: Request) {
     },
   });
 
+  const emailResult = await sendInvitationEmail({
+    to: email,
+    token,
+  });
+
   await logAudit({
     actorUserId: user.id,
     action: "INVITATION_CREATED",
@@ -48,6 +54,7 @@ export async function POST(request: Request) {
   return NextResponse.json({
     ok: true,
     invitationId: invitation.id,
-    token,
+    emailSent: emailResult.ok,
+    inviteUrl: emailResult.ok ? null : getInviteUrl(token),
   });
 }
