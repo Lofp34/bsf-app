@@ -33,7 +33,7 @@ export default function InvitationsList({ invitations }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const now = new Date();
+  const now = useMemo(() => new Date(), []);
 
   const filteredInvitations = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
