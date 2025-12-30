@@ -2,11 +2,13 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { memberSchema } from "@/lib/validation";
 import { requireSessionUser } from "@/lib/auth";
+import { logAudit } from "@/lib/audit";
 import { Prisma, UserRole } from "@prisma/client";
 
 export async function POST(request: Request) {
+  let user;
   try {
-    await requireSessionUser([UserRole.SUPER_ADMIN, UserRole.ADMIN]);
+    user = await requireSessionUser([UserRole.SUPER_ADMIN, UserRole.ADMIN]);
   } catch (error) {
     return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   }
@@ -32,6 +34,12 @@ export async function POST(request: Request) {
         consentShareContact,
         consentShareHobbies,
       },
+    });
+
+    await logAudit({
+      actorUserId: user.id,
+      action: "MEMBER_CREATED",
+      metadata: { memberId: member.id, email: member.email },
     });
 
     return NextResponse.json({ ok: true, memberId: member.id });

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import EventsList from "./events-list";
 
 export const dynamic = "force-dynamic";
 
@@ -20,11 +21,17 @@ export default async function EventsPage() {
       },
     },
   });
-
-  const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+  const serializedEvents = events.map((event) => ({
+    id: event.id,
+    title: event.title,
+    location: event.location,
+    status: event.status,
+    capacity: event.capacity,
+    startAt: event.startAt.toISOString(),
+    createdByLabel: event.createdBy.member
+      ? `${event.createdBy.member.firstname} ${event.createdBy.member.lastname}`
+      : event.createdBy.authEmail,
+  }));
 
   return (
     <main className="mx-auto w-full max-w-4xl">
@@ -40,46 +47,7 @@ export default async function EventsPage() {
         </div>
       </header>
 
-      <section className="mt-6 space-y-4">
-        {events.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-[var(--stroke)] bg-white px-5 py-6 text-sm text-[var(--muted)]">
-            Aucun evenement planifie pour le moment.
-          </div>
-        )}
-        {events.map((event) => (
-          <div
-            key={event.id}
-            className="rounded-2xl border border-[var(--stroke)] bg-white px-5 py-5 shadow-sm"
-          >
-            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-              <div>
-                <p className="text-lg font-semibold text-[var(--ink)]">
-                  {event.title}
-                </p>
-                <p className="text-sm text-[var(--muted)]">
-                  {dateFormatter.format(event.startAt)} · {event.location}
-                </p>
-                <p className="mt-2 text-xs text-[var(--muted)]">
-                  Cree par{" "}
-                  {event.createdBy.member
-                    ? `${event.createdBy.member.firstname} ${event.createdBy.member.lastname}`
-                    : event.createdBy.authEmail}
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-                <span className="rounded-full border border-[var(--stroke)] px-3 py-1">
-                  {event.status === "PUBLISHED" ? "Publie" : "Annule"}
-                </span>
-                {event.capacity && (
-                  <span className="rounded-full border border-[var(--stroke)] px-3 py-1">
-                    Cap: {event.capacity}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </section>
+      <EventsList events={serializedEvents} />
     </main>
   );
 }
