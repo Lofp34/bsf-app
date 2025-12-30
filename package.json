@@ -8,7 +8,9 @@
     "build": "node scripts/vercel-build.mjs",
     "start": "next start",
     "lint": "next lint",
-    "test": "DATABASE_URL=\"postgresql://user:pass@localhost:5432/db\" npx prisma validate",
+    "test:prisma": "DATABASE_URL=\"postgresql://user:pass@localhost:5432/db\" npx prisma validate",
+    "test:app": "tsx scripts/tests.ts",
+    "test": "npm run test:prisma && npm run test:app",
     "postinstall": "prisma generate"
   },
   "keywords": [],
@@ -17,10 +19,12 @@
   "type": "commonjs",
   "dependencies": {
     "@prisma/client": "^6.19.1",
+    "bcryptjs": "^3.0.3",
     "next": "^14.2.35",
     "prisma": "^6.19.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
@@ -30,6 +34,7 @@
     "eslint-config-next": "^16.1.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

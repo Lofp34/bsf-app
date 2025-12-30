@@ -17,6 +17,7 @@ MVP mobile-first pour l'annuaire, les recommandations, les evenements et les cla
    cp .env.example .env
    ```
 3. Renseigner `DATABASE_URL` (et `DIRECT_URL` si besoin).
+4. Optionnel: ajuster `SESSION_TTL_DAYS` et `SESSION_COOKIE_NAME`.
 4. Generer le client Prisma :
    ```bash
    npx prisma generate
@@ -34,11 +35,13 @@ MVP mobile-first pour l'annuaire, les recommandations, les evenements et les cla
 - Consentements par defaut : `consent_share_contact = true`, `consent_share_hobbies = true` pour favoriser l'engagement, modifiables par l'utilisateur.
 - Relation Member <-> User : 1-1 via `User.memberId` (un membre peut exister sans compte).
 - Stockage PII contact recommande : email et telephone autorises (avec garde-fous cote UI/API a venir).
+- Auth : email + mot de passe (sessions en base, cookie HTTPOnly).
 
 ## Scripts utiles
 - `npm run dev`: dev server
 - `npm run build`: build avec Prisma generate + migrate deploy conditionnel
 - `npm run lint`: lint
+- `npm test`: validations Prisma + schemas zod + RBAC
 
 ## Deploiement Vercel + Neon
 1. Deployer sans `DATABASE_URL` (migration skippee).

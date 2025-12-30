@@ -67,9 +67,13 @@ model User {
   role              UserRole  @default(USER)
   isActive          Boolean   @default(true)
   authEmail         String    @unique
+  passwordHash      String?
+  passwordUpdatedAt DateTime?
   emailVerifiedAt   DateTime?
   lastLoginAt       DateTime?
   notificationPrefs Json?
+  failedLoginCount  Int       @default(0)
+  lockedUntil       DateTime?
   deactivatedAt     DateTime?
   deactivatedById   String?
   createdAt         DateTime  @default(now())
@@ -85,6 +89,8 @@ model User {
   hobbies             UserHobby[]
   events              Event[]
   eventRsvps          EventRsvp[]
+  sessions            Session[]
+  auditLogs           AuditLog[]                    @relation("AuditActor")
 
   @@index([role])
 }
@@ -164,6 +170,34 @@ model Notification {
   recipient User @relation(fields: [recipientUserId], references: [id])
 
   @@index([recipientUserId, readAt])
+}
+
+model Session {
+  id         String    @id @default(cuid())
+  userId     String
+  tokenHash  String    @unique
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  lastUsedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  actorUserId  String
+  action       String
+  targetUserId String?
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  actor User @relation("AuditActor", fields: [actorUserId], references: [id])
+
+  @@index([actorUserId, createdAt])
 }
 
 model Hobby {

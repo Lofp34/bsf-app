@@ -4,8 +4,46 @@
 
 :root {
   color-scheme: light;
+  --bg: #f7f3eb;
+  --ink: #1f231d;
+  --muted: #6d6a61;
+  --accent: #c1653c;
+  --accent-deep: #8b3f1d;
+  --card: #fff9ef;
+  --stroke: #e6dccb;
 }
 
 body {
-  @apply bg-white text-neutral-900;
+  font-family: var(--font-body), sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display), serif;
+  letter-spacing: 0.01em;
+}
+
+.surface-grid {
+  background-image: linear-gradient(90deg, rgba(31, 35, 29, 0.06) 1px, transparent 1px),
+    linear-gradient(rgba(31, 35, 29, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.grain {
+  position: relative;
+  overflow: hidden;
+}
+
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: -80%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
+  opacity: 0.25;
+  pointer-events: none;
+  mix-blend-mode: multiply;
 }
