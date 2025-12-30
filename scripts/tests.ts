@@ -1,4 +1,9 @@
-import { loginSchema, invitationSchema, acceptInviteSchema } from "../lib/validation";
+import {
+  loginSchema,
+  invitationSchema,
+  acceptInviteSchema,
+  memberSchema,
+} from "../lib/validation";
 import { hasRole, requireRole } from "../lib/rbac";
 
 function assert(condition: boolean, message: string) {
@@ -28,6 +33,14 @@ function testSchemas() {
     password: "password123",
   });
   assert(okAccept.success, "acceptInviteSchema should accept valid input");
+
+  const okMember = memberSchema.safeParse({
+    firstname: "Camille",
+    lastname: "Morel",
+    company: "BSF",
+    email: "camille@example.com",
+  });
+  assert(okMember.success, "memberSchema should accept valid input");
 }
 
 function testRbac() {
