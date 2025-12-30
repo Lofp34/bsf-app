@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "seed:demo": "tsx scripts/seed-demo.ts",
-    "test:prisma": "DATABASE_URL=\"postgresql://user:pass@localhost:5432/db\" npx prisma validate",
+    "test:prisma": "DATABASE_URL=\"postgresql://user:pass@localhost:5432/db\" DIRECT_URL=\"postgresql://user:pass@localhost:5432/db\" npx prisma validate",
     "test:app": "tsx scripts/tests.ts",
     "test": "npm run test:prisma && npm run test:app",
     "postinstall": "prisma generate"
