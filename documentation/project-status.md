@@ -63,10 +63,11 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour pi
 - 2025-12-30: espace admin et navigation complete, audit, health check, actions rapides, doc de suivi.
 - 2025-12-30: ajout du skill `project-status-keeper` et mise a jour du document maitre.
 - 2025-12-30: stabilisation Vercel (DIRECT_URL + retry migrations) et merge de l'admin MVP.
+- 2025-12-30: pagination + export CSV admin, demarrage CRUD evenements (roles).
 
 ## Prochaine etape (proposee)
 1) Pagination + export CSV sur les listes admin.
-2) Historique des modifications par membre (audit detaille). (en cours)
-3) CRUD evenements (creation/edition) avec roles.
+2) Historique des modifications par membre (audit detaille).
+3) CRUD evenements (creation/edition/annulation) avec roles. (en cours)
 4) Notifications (email) pour invitations.
 5) Tableau de bord KPI plus riche (tendances, activite).

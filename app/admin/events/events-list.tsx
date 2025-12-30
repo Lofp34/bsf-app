@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 
 type EventItem = {
   id: string;
@@ -25,12 +26,15 @@ type Props = {
 };
 
 export default function EventsList({ events }: Props) {
+  const [currentEvents, setCurrentEvents] = useState(events);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<FilterKey>("all");
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
   const filteredEvents = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    return events.filter((event) => {
+    return currentEvents.filter((event) => {
       const matchesQuery = normalizedQuery
         ? [event.title, event.location, event.createdByLabel]
             .join(" ")
@@ -45,12 +49,34 @@ export default function EventsList({ events }: Props) {
             : event.status === "CANCELED";
       return matchesQuery && matchesFilter;
     });
-  }, [events, query, filter]);
+  }, [currentEvents, query, filter]);
 
   const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
     dateStyle: "medium",
     timeStyle: "short",
   });
+
+  async function handleCancel(eventId: string) {
+    setMessage(null);
+    const confirmed = window.confirm("Confirmer l'annulation de l'evenement ?");
+    if (!confirmed) return;
+    setLoadingId(eventId);
+    const response = await fetch(`/api/admin/events/${eventId}/cancel`, {
+      method: "POST",
+    });
+    if (!response.ok) {
+      setMessage("Annulation impossible. Rechargez la page.");
+      setLoadingId(null);
+      return;
+    }
+    setCurrentEvents((prev) =>
+      prev.map((item) =>
+        item.id === eventId ? { ...item, status: "CANCELED" } : item,
+      ),
+    );
+    setMessage("Evenement annule.");
+    setLoadingId(null);
+  }
 
   return (
     <section className="mt-6 space-y-4">
@@ -66,6 +92,9 @@ export default function EventsList({ events }: Props) {
             placeholder="Titre, lieu, organisateur"
             className="mt-2 w-full rounded-2xl border border-[var(--stroke)] bg-[var(--card)] px-4 py-2 text-sm text-[var(--ink)] shadow-sm outline-none transition focus:border-[var(--accent)]"
           />
+          <p className="mt-2 text-[10px] uppercase tracking-[0.2em] text-[var(--muted)]">
+            Filtre applique sur la page courante.
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           {FILTERS.map((item) => (
@@ -84,6 +113,12 @@ export default function EventsList({ events }: Props) {
           ))}
         </div>
       </div>
+
+      {message && (
+        <div className="rounded-2xl border border-[var(--stroke)] bg-[var(--card)] px-4 py-3 text-sm text-[var(--muted)]">
+          {message}
+        </div>
+      )}
 
       {filteredEvents.length === 0 && (
         <div className="rounded-2xl border border-dashed border-[var(--stroke)] bg-white px-5 py-6 text-sm text-[var(--muted)]">
@@ -118,6 +153,24 @@ export default function EventsList({ events }: Props) {
                 </span>
               )}
             </div>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link
+              href={`/admin/events/${event.id}`}
+              className="rounded-2xl border border-[var(--stroke)] px-4 py-2 text-xs uppercase tracking-[0.2em] text-[var(--muted)] transition hover:border-[var(--accent)]"
+            >
+              Modifier
+            </Link>
+            {event.status === "PUBLISHED" && (
+              <button
+                type="button"
+                onClick={() => handleCancel(event.id)}
+                disabled={loadingId === event.id}
+                className="rounded-2xl border border-[var(--stroke)] px-4 py-2 text-xs uppercase tracking-[0.2em] text-[var(--muted)] transition hover:border-[var(--accent)] disabled:opacity-60"
+              >
+                {loadingId === event.id ? "Annulation..." : "Annuler"}
+              </button>
+            )}
           </div>
         </div>
       ))}
