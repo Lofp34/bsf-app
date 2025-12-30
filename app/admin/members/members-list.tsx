@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 
 type Member = {
   id: string;
@@ -132,6 +133,14 @@ export default function MembersList({ members }: Props) {
                 Loisirs: {member.consentShareHobbies ? "Oui" : "Non"}
               </span>
             </div>
+          </div>
+          <div className="mt-4">
+            <Link
+              href={`/admin/members/${member.id}`}
+              className="inline-flex rounded-full border border-[var(--stroke)] px-3 py-2 text-xs uppercase tracking-[0.2em] text-[var(--muted)] transition hover:border-[var(--accent)]"
+            >
+              Historique
+            </Link>
           </div>
         </div>
       ))}
