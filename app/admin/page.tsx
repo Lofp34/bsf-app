@@ -1,6 +1,7 @@
 import { requireSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
+import Link from "next/link";
 import AddMemberForm from "./add-member-form";
 import InviteUserForm from "./invite-user-form";
 
@@ -54,7 +55,7 @@ export default async function AdminPage() {
   const now = new Date();
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-12">
+    <main className="mx-auto w-full max-w-5xl pb-12">
       <section className="rounded-3xl border border-[var(--stroke)] bg-[var(--card)] p-8 shadow-sm surface-grid grain">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
@@ -63,6 +64,32 @@ export default async function AdminPage() {
               Pilotez les operations MVP: invitations, suivi des acces et
               preparation des prochaines actions admin.
             </p>
+            <div className="mt-6 flex flex-wrap gap-3 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+              <Link
+                href="/admin/members"
+                className="rounded-full border border-[var(--stroke)] bg-white px-3 py-2 transition hover:border-[var(--accent)]"
+              >
+                Annuaire
+              </Link>
+              <Link
+                href="/admin/invitations"
+                className="rounded-full border border-[var(--stroke)] bg-white px-3 py-2 transition hover:border-[var(--accent)]"
+              >
+                Invitations
+              </Link>
+              <Link
+                href="/admin/users"
+                className="rounded-full border border-[var(--stroke)] bg-white px-3 py-2 transition hover:border-[var(--accent)]"
+              >
+                Utilisateurs
+              </Link>
+              <Link
+                href="/admin/events"
+                className="rounded-full border border-[var(--stroke)] bg-white px-3 py-2 transition hover:border-[var(--accent)]"
+              >
+                Evenements
+              </Link>
+            </div>
           </div>
           <div className="flex flex-wrap gap-2">
             <span className="rounded-full border border-[var(--stroke)] bg-white px-4 py-1 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
