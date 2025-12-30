@@ -1,0 +1,225 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+
+enum RecommendationStatus {
+  SENT
+  IN_PROGRESS
+  ABANDONED
+  VALIDATED
+}
+
+enum NotificationType {
+  RECO_RECEIVED
+  RECO_FOLLOWUP_DUE
+  RECO_STATUS_UPDATED
+  EVENT_PUBLISHED
+  EVENT_CANCELED
+  SYSTEM
+}
+
+enum EventStatus {
+  PUBLISHED
+  CANCELED
+}
+
+enum RsvpStatus {
+  GOING
+  NOT_GOING
+}
+
+model Member {
+  id                  String    @id @default(cuid())
+  firstname           String
+  lastname            String
+  company             String
+  email               String?   @unique
+  phone               String?
+  consentShareContact Boolean   @default(true)
+  consentShareHobbies Boolean   @default(true)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime?
+  anonymizedAt        DateTime?
+
+  user            User?
+  invitations     Invitation[]
+  recommendations Recommendation[] @relation("RecipientRecommendations")
+
+  @@index([lastname, firstname])
+  @@index([company])
+}
+
+model User {
+  id                String    @id @default(cuid())
+  memberId          String    @unique
+  role              UserRole  @default(USER)
+  isActive          Boolean   @default(true)
+  authEmail         String    @unique
+  emailVerifiedAt   DateTime?
+  lastLoginAt       DateTime?
+  notificationPrefs Json?
+  deactivatedAt     DateTime?
+  deactivatedById   String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  member              Member                        @relation(fields: [memberId], references: [id])
+  deactivatedBy       User?                         @relation("UserDeactivations", fields: [deactivatedById], references: [id])
+  deactivations       User[]                        @relation("UserDeactivations")
+  sentRecommendations Recommendation[]              @relation("SenderRecommendations")
+  statusHistory       RecommendationStatusHistory[]
+  notifications       Notification[]
+  hobbies             UserHobby[]
+  events              Event[]
+  eventRsvps          EventRsvp[]
+
+  @@index([role])
+}
+
+model Invitation {
+  id         String    @id @default(cuid())
+  email      String
+  memberId   String?
+  role       UserRole
+  tokenHash  String    @unique
+  sentAt     DateTime  @default(now())
+  expireAt   DateTime
+  acceptedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  member Member? @relation(fields: [memberId], references: [id])
+
+  @@index([email])
+}
+
+model Recommendation {
+  id                  String               @id @default(cuid())
+  senderUserId        String
+  recipientMemberId   String
+  recContactFirstname String
+  recContactLastname  String
+  recContactCompany   String?
+  recContactEmail     String?
+  recContactPhone     String?
+  text                String
+  textHash            String?
+  sentAt              DateTime             @default(now())
+  followupDueAt       DateTime
+  followupSentAt      DateTime?
+  status              RecommendationStatus @default(SENT)
+  statusUpdatedAt     DateTime?
+  revenueAmount       Decimal?             @db.Decimal(12, 2)
+  revenueCurrency     String?              @default("EUR")
+  revenueDate         DateTime?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  deletedAt           DateTime?
+
+  sender        User                          @relation("SenderRecommendations", fields: [senderUserId], references: [id])
+  recipient     Member                        @relation("RecipientRecommendations", fields: [recipientMemberId], references: [id])
+  statusHistory RecommendationStatusHistory[]
+
+  @@index([senderUserId])
+  @@index([recipientMemberId])
+  @@index([followupDueAt])
+  @@index([status])
+  @@index([sentAt])
+}
+
+model RecommendationStatusHistory {
+  id               String               @id @default(cuid())
+  recommendationId String
+  oldStatus        RecommendationStatus
+  newStatus        RecommendationStatus
+  changedByUserId  String
+  changedAt        DateTime             @default(now())
+
+  recommendation Recommendation @relation(fields: [recommendationId], references: [id])
+  changedBy      User           @relation(fields: [changedByUserId], references: [id])
+
+  @@index([recommendationId])
+}
+
+model Notification {
+  id              String           @id @default(cuid())
+  recipientUserId String
+  type            NotificationType
+  payload         Json
+  createdAt       DateTime         @default(now())
+  readAt          DateTime?
+
+  recipient User @relation(fields: [recipientUserId], references: [id])
+
+  @@index([recipientUserId, readAt])
+}
+
+model Hobby {
+  id        String   @id @default(cuid())
+  label     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users UserHobby[]
+}
+
+model UserHobby {
+  userId    String
+  hobbyId   String
+  level     Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id])
+  hobby Hobby @relation(fields: [hobbyId], references: [id])
+
+  @@id([userId, hobbyId])
+  @@index([hobbyId])
+}
+
+model Event {
+  id              String      @id @default(cuid())
+  createdByUserId String
+  title           String
+  type            String?
+  startAt         DateTime
+  location        String
+  description     String
+  capacity        Int?
+  status          EventStatus @default(PUBLISHED)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  canceledAt      DateTime?
+
+  createdBy User        @relation(fields: [createdByUserId], references: [id])
+  rsvps     EventRsvp[]
+
+  @@index([startAt])
+  @@index([createdByUserId])
+}
+
+model EventRsvp {
+  eventId String
+  userId  String
+  status  RsvpStatus
+  rsvpAt  DateTime   @default(now())
+  comment String?
+
+  event Event @relation(fields: [eventId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@id([eventId, userId])
+  @@index([userId])
+}
