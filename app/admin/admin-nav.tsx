@@ -11,10 +11,12 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/admin", label: "Vue d'ensemble", description: "Tableau de bord" },
+  { href: "/admin/status", label: "Etat", description: "KPI" },
   { href: "/admin/members", label: "Membres", description: "Annuaire" },
   { href: "/admin/invitations", label: "Invitations", description: "Acces" },
   { href: "/admin/users", label: "Utilisateurs", description: "Comptes" },
   { href: "/admin/events", label: "Evenements", description: "Agenda" },
+  { href: "/admin/audit", label: "Journal", description: "Audit" },
 ];
 
 type Props = {

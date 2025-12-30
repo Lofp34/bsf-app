@@ -42,6 +42,10 @@ MVP mobile-first pour l'annuaire, les recommandations, les evenements et les cla
 - `npm run build`: build avec Prisma generate + migrate deploy conditionnel
 - `npm run lint`: lint
 - `npm test`: validations Prisma + schemas zod + RBAC
+- `npm run seed:demo`: injecte des donnees de demo (dev)
+
+## Health check
+- `GET /api/health`
 
 ## Deploiement Vercel + Neon
 1. Deployer sans `DATABASE_URL` (migration skippee).
