@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import EventsList from "./events-list";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,12 @@ export default async function EventsPage() {
           <span className="rounded-full border border-[var(--stroke)] bg-white px-3 py-1">
             Total: {events.length}
           </span>
+          <Link
+            href="/admin/events/new"
+            className="rounded-full border border-[var(--stroke)] bg-white px-3 py-1 transition hover:border-[var(--accent)]"
+          >
+            Creer
+          </Link>
         </div>
       </header>
 

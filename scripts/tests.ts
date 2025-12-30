@@ -3,6 +3,7 @@ import {
   invitationSchema,
   acceptInviteSchema,
   memberSchema,
+  eventSchema,
 } from "../lib/validation";
 import { hasRole, requireRole } from "../lib/rbac";
 
@@ -41,6 +42,14 @@ function testSchemas() {
     email: "camille@example.com",
   });
   assert(okMember.success, "memberSchema should accept valid input");
+
+  const okEvent = eventSchema.safeParse({
+    title: "Rencontre",
+    startAt: new Date().toISOString(),
+    location: "Montpellier",
+    description: "Session de mise en relation",
+  });
+  assert(okEvent.success, "eventSchema should accept valid input");
 }
 
 function testRbac() {

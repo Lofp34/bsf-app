@@ -25,3 +25,12 @@ export const memberSchema = z.object({
   consentShareContact: z.boolean().optional().default(true),
   consentShareHobbies: z.boolean().optional().default(true),
 });
+
+export const eventSchema = z.object({
+  title: z.string().trim().min(2).max(160),
+  type: z.string().trim().max(80).optional().nullable(),
+  startAt: z.string().datetime(),
+  location: z.string().trim().min(2).max(160),
+  description: z.string().trim().min(4).max(2000),
+  capacity: z.number().int().min(1).max(10000).optional().nullable(),
+});
