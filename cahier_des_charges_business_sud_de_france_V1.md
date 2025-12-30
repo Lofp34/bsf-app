@@ -10,10 +10,10 @@
 ## Glossaire (normalisation des termes)
 - **Membre** : personne appartenant au réseau (fiche annuaire). Peut exister **sans compte** (import, coordonnées incomplètes).
 - **Utilisateur** : membre disposant d’un **compte** permettant de se connecter et d’agir.
-- **Profil** : informations modifiables d’un utilisateur (coordonnées, photo, bio, loisirs…).
+- **Profil** : informations modifiables d’un utilisateur (coordonnées, adresse url profil linkedin, photo, bio, loisirs…).
 - **Annuaire** : liste consultable des membres (fiches) avec recherche/filtre.
 - **Recommandation** : action par laquelle un utilisateur (**émetteur**) recommande un **contact recommandé** à un **destinataire** (membre du réseau), avec un texte.
-- **Contact recommandé** : personne externe au réseau (prospect/partenaire) décrite au minimum par nom/prénom (coordonnées optionnelles selon politique RGPD).
+- **Contact recommandé** : personne externe au réseau (prospect/partenaire) décrite au minimum par nom/prénom.
 - **Destinataire** : membre/utilisateur à qui la recommandation est adressée.
 - **Statut de recommandation** : suivi (reçue → en cours / abandonnée / validée + CA).
 - **Événement** : activité proposée à tout le réseau (apéro, rando…) avec date/lieu/inscription.
@@ -129,12 +129,12 @@ Application mobile-first pour fédérer les membres, faciliter les mises en rela
 **FR-005 — Gestion du profil utilisateur**  
 - Description : user modifie coordonnées et infos publiques.  
 - Règles : email unique ; téléphone format E.164 (ou validation locale FR).  
-- Données : firstname, lastname, company, email, phone, photo_url, bio.  
+- Données : firstname, lastname, company, email, phone, linkedin_url, photo_url, bio.  
 - États : Profil complet / incomplet.  
 - Edge : changement email → re-vérification.
 
 **FR-006 — Import annuaire depuis Excel (administration)**  
-- Description : Super Admin importe Excel (nom, prénom, société, email, téléphone).  
+- Description : Super Admin importe Excel (nom, prénom, société, email, téléphone, linkedin_url).  
 - Règles : mapping colonnes ; dédoublonnage (email prioritaire sinon nom+prénom+société).  
 - Données : import_batch_id, source_row, import_errors.  
 - États : En cours / Terminé / Terminé avec erreurs.  
@@ -144,7 +144,7 @@ Application mobile-first pour fédérer les membres, faciliter les mises en rela
 **FR-007 — Affichage annuaire (liste paginée)**  
 - Description : liste des membres mobile-first.  
 - Règles : pagination/scroll infini ; tri par nom.  
-- Données : member_id, firstname, lastname, company, flags visibilité.  
+- Données : member_id, firstname, lastname, company, linkedin_url, flags visibilité.  
 - États : n/a.  
 - Edge : fiches incomplètes affichées.
 
@@ -414,7 +414,7 @@ Application mobile-first pour fédérer les membres, faciliter les mises en rela
 ## 7) Modèle de données (niveau fonctionnel)
 
 ### Entités & attributs
-- **Member** : member_id (PK), firstname, lastname, company, email?, phone?, created_at, updated_at, consent_share_contact(bool), consent_share_hobbies(bool), linked_user_id?(FK)
+- **Member** : member_id (PK), firstname, lastname, company, email?, phone?, linkedin_url?, created_at, updated_at, consent_share_contact(bool), consent_share_hobbies(bool), linked_user_id?(FK)
 - **User** : user_id (PK), member_id (FK unique), role(ENUM), is_active, auth_email(unique), email_verified_at, last_login_at, created_at, updated_at
 - **Invitation** : invitation_id, email, member_id?, role, token_hash, sent_at, expire_at, accepted_at
 - **Recommendation** : reco_id, sender_user_id(FK), recipient_member_id(FK), rec_contact_firstname, rec_contact_lastname, rec_contact_company?, rec_contact_email?, rec_contact_phone?, text, sent_at, followup_due_at, followup_sent_at, status(ENUM), status_updated_at, revenue_amount?, revenue_currency?, revenue_date?, created_at, updated_at
