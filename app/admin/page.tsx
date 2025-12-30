@@ -1,6 +1,7 @@
 import { requireSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
+import AddMemberForm from "./add-member-form";
 import InviteUserForm from "./invite-user-form";
 
 export default async function AdminPage() {
@@ -110,6 +111,7 @@ export default async function AdminPage() {
 
       <div className="mt-10 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="space-y-6">
+          <AddMemberForm />
           <InviteUserForm
             members={recentMembers}
             canInviteSuperAdmin={isSuperAdmin}
