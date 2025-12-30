@@ -1,7 +1,12 @@
 # Project Status (MVP)
 
 ## Objectif
-Livrer un MVP mobile-first, fluide et professional, avec un espace admin qui permet de piloter l'annuaire, les invitations et la qualite des donnees.
+Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour piloter l'annuaire, les invitations et la qualite des donnees.
+
+## Rituels de mise a jour
+- Ce document est le document maitre.
+- Il est mis a jour a chaque PR mergee.
+- Chaque PR doit ajouter une ligne courte dans "Journal des evolutions".
 
 ## Ce qui est en place
 - Authentification email + mot de passe, sessions en base.
@@ -21,6 +26,22 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin qui per
 - Health check: `GET /api/health`.
 - Seed de demo: `npm run seed:demo`.
 
+## Perimetre (scope)
+- In: annuaire, invitations, comptes utilisateurs, evenements, recommandations (MVP).
+- Out: facturation, CRM externe, analytics avancees, mobile natif, SSO.
+
+## Decisions prises
+- Auth par email + mot de passe (sessions en base).
+- Migrations Prisma via `prisma migrate deploy`.
+- `DIRECT_URL` pour les migrations, `DATABASE_URL` pour l'app (Vercel + Neon).
+- Import Excel retire temporairement (creation manuelle + admin forms).
+- Document maitre maintenu par le skill `project-status-keeper`.
+- Retry automatique sur `prisma migrate deploy` en build (stabilite Vercel).
+
+## Risques / Blocages
+- Deploiement bloque si `DIRECT_URL` absent sur Vercel.
+- Locks Prisma en cas de deploys concurrents (attenue par retry, eviter les redeploys multiples).
+
 ## Architecture (essentiel)
 - Next.js App Router + TypeScript + Tailwind CSS.
 - Prisma + Neon Postgres.
@@ -38,8 +59,13 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin qui per
 - `DIRECT_URL` pour les migrations (evite les timeouts du pooler).
 - Build: `scripts/vercel-build.mjs` utilise `DIRECT_URL` si present.
 
+## Journal des evolutions
+- 2025-12-30: espace admin et navigation complete, audit, health check, actions rapides, doc de suivi.
+- 2025-12-30: ajout du skill `project-status-keeper` et mise a jour du document maitre.
+- 2025-12-30: stabilisation Vercel (DIRECT_URL + retry migrations) et merge de l'admin MVP.
+
 ## Prochaine etape (proposee)
-1) Pagination + export CSV sur les listes admin.
+1) Pagination + export CSV sur les listes admin. (en cours)
 2) Historique des modifications par membre (audit detaille).
 3) CRUD evenements (creation/edition) avec roles.
 4) Notifications (email) pour invitations.
