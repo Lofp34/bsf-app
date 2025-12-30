@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import InvitationsList from "./invitations-list";
 
 export const dynamic = "force-dynamic";
 
@@ -16,9 +17,12 @@ export default async function InvitationsPage() {
       },
     },
   });
-
-  const now = new Date();
-  const dateFormatter = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" });
+  const serializedInvitations = invitations.map((invitation) => ({
+    ...invitation,
+    sentAt: invitation.sentAt.toISOString(),
+    expireAt: invitation.expireAt.toISOString(),
+    acceptedAt: invitation.acceptedAt ? invitation.acceptedAt.toISOString() : null,
+  }));
 
   return (
     <main className="mx-auto w-full max-w-4xl">
@@ -34,59 +38,7 @@ export default async function InvitationsPage() {
         </div>
       </header>
 
-      <section className="mt-6 space-y-4">
-        {invitations.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-[var(--stroke)] bg-white px-5 py-6 text-sm text-[var(--muted)]">
-            Aucune invitation envoyee.
-          </div>
-        )}
-        {invitations.map((invitation) => {
-          const isExpired = invitation.expireAt < now && !invitation.acceptedAt;
-          const statusLabel = invitation.acceptedAt
-            ? "Acceptee"
-            : isExpired
-              ? "Expiree"
-              : "En attente";
-          const statusTone = invitation.acceptedAt
-            ? "text-emerald-700"
-            : isExpired
-              ? "text-red-600"
-              : "text-[var(--accent)]";
-
-          return (
-            <div
-              key={invitation.id}
-              className="rounded-2xl border border-[var(--stroke)] bg-white px-5 py-5 shadow-sm"
-            >
-              <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                <div>
-                  <p className="text-lg font-semibold text-[var(--ink)]">
-                    {invitation.email}
-                  </p>
-                  <p className="text-sm text-[var(--muted)]">
-                    Envoyee le {dateFormatter.format(invitation.sentAt)}
-                  </p>
-                  <p className="mt-2 text-xs text-[var(--muted)]">
-                    {invitation.member
-                      ? `${invitation.member.firstname} ${invitation.member.lastname} · ${invitation.member.company}`
-                      : "Membre non lie"}
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.2em]">
-                  <span
-                    className={`rounded-full border border-[var(--stroke)] px-3 py-1 ${statusTone}`}
-                  >
-                    {statusLabel}
-                  </span>
-                  <span className="rounded-full border border-[var(--stroke)] px-3 py-1 text-[var(--muted)]">
-                    Role: {invitation.role}
-                  </span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </section>
+      <InvitationsList invitations={serializedInvitations} />
     </main>
   );
 }

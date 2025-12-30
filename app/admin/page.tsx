@@ -20,7 +20,14 @@ export default async function AdminPage() {
     );
   }
 
-  const [recentMembers, recentInvitations] = await Promise.all([
+  const [
+    recentMembers,
+    recentInvitations,
+    membersCount,
+    activeUsersCount,
+    pendingInvitationsCount,
+    upcomingEventsCount,
+  ] = await Promise.all([
     prisma.member.findMany({
       orderBy: { createdAt: "desc" },
       take: 120,
@@ -44,6 +51,14 @@ export default async function AdminPage() {
           },
         },
       },
+    }),
+    prisma.member.count(),
+    prisma.user.count({ where: { isActive: true } }),
+    prisma.invitation.count({
+      where: { acceptedAt: null, expireAt: { gt: new Date() } },
+    }),
+    prisma.event.count({
+      where: { startAt: { gt: new Date() }, status: "PUBLISHED" },
     }),
   ]);
 
@@ -89,6 +104,18 @@ export default async function AdminPage() {
               >
                 Evenements
               </Link>
+              <Link
+                href="/admin/status"
+                className="rounded-full border border-[var(--stroke)] bg-white px-3 py-2 transition hover:border-[var(--accent)]"
+              >
+                Etat
+              </Link>
+              <Link
+                href="/admin/audit"
+                className="rounded-full border border-[var(--stroke)] bg-white px-3 py-2 transition hover:border-[var(--accent)]"
+              >
+                Journal
+              </Link>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -117,7 +144,7 @@ export default async function AdminPage() {
             </p>
             <p className="mt-2 text-lg font-semibold">Admin MVP</p>
             <p className="mt-1 text-xs text-[var(--muted)]">
-              Import, gestion users, futurs catalogues.
+              Invitations, gestion users, futurs catalogues.
             </p>
           </div>
           <div className="rounded-2xl border border-[var(--stroke)] bg-white p-4">
@@ -131,6 +158,40 @@ export default async function AdminPage() {
               {isSuperAdmin
                 ? "Acces complet aux operations sensibles."
                 : "Acces limite par role."}
+            </p>
+          </div>
+        </div>
+        <div className="mt-6 grid gap-3 md:grid-cols-4">
+          <div className="rounded-2xl border border-[var(--stroke)] bg-white p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+              Membres
+            </p>
+            <p className="mt-2 text-2xl font-semibold text-[var(--ink)]">
+              {membersCount}
+            </p>
+          </div>
+          <div className="rounded-2xl border border-[var(--stroke)] bg-white p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+              Utilisateurs actifs
+            </p>
+            <p className="mt-2 text-2xl font-semibold text-[var(--ink)]">
+              {activeUsersCount}
+            </p>
+          </div>
+          <div className="rounded-2xl border border-[var(--stroke)] bg-white p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+              Invitations en attente
+            </p>
+            <p className="mt-2 text-2xl font-semibold text-[var(--ink)]">
+              {pendingInvitationsCount}
+            </p>
+          </div>
+          <div className="rounded-2xl border border-[var(--stroke)] bg-white p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+              Evenements a venir
+            </p>
+            <p className="mt-2 text-2xl font-semibold text-[var(--ink)]">
+              {upcomingEventsCount}
             </p>
           </div>
         </div>

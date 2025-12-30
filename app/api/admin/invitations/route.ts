@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { invitationSchema } from "@/lib/validation";
 import { hashToken, generateToken } from "@/lib/crypto";
 import { requireSessionUser } from "@/lib/auth";
+import { logAudit } from "@/lib/audit";
 import { UserRole } from "@prisma/client";
 
 export async function POST(request: Request) {
@@ -36,6 +37,12 @@ export async function POST(request: Request) {
       sentAt: new Date(),
       expireAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     },
+  });
+
+  await logAudit({
+    actorUserId: user.id,
+    action: "INVITATION_CREATED",
+    metadata: { invitationId: invitation.id, email, role },
   });
 
   return NextResponse.json({
