@@ -52,6 +52,12 @@ export default async function CommunityLayout({
               >
                 Activites
               </Link>
+              <Link
+                href="/community/members"
+                className="block rounded-2xl border border-[var(--stroke)] bg-white px-4 py-3 text-sm font-semibold text-[var(--muted)] transition hover:border-[var(--accent)]"
+              >
+                Membres
+              </Link>
               {(user.role === UserRole.ADMIN || user.role === UserRole.SUPER_ADMIN) && (
                 <Link
                   href="/admin"
