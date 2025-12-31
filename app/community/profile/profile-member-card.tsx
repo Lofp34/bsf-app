@@ -83,6 +83,8 @@ function ProfileMemberEditor({ member }: { member: Member }) {
             setEditing((value) => !value);
             setStatus(null);
           }}
+          aria-pressed={editing}
+          title="Modifier ma fiche"
           className="inline-flex rounded-full border border-[var(--stroke)] bg-white px-4 py-2 text-xs uppercase tracking-[0.2em] text-[var(--muted)] transition hover:border-[var(--accent)]"
         >
           {editing ? "Annuler" : "Modifier ma fiche"}
