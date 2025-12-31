@@ -62,6 +62,7 @@ model Member {
   user            User?
   invitations     Invitation[]
   recommendations Recommendation[] @relation("RecipientRecommendations")
+  eventInvites    EventInvite[]   @relation("MemberEventInvites")
 
   @@index([lastname, firstname])
   @@index([company])
@@ -95,6 +96,7 @@ model User {
   hobbies             UserHobby[]
   events              Event[]
   eventRsvps          EventRsvp[]
+  invitedEventInvites EventInvite[]             @relation("UserEventInvites")
   sessions            Session[]
   auditLogs           AuditLog[]                    @relation("AuditActor")
 
@@ -272,9 +274,9 @@ model EventInvite {
   invitedByUserId String
   invitedAt       DateTime @default(now())
 
-  event    Event  @relation(fields: [eventId], references: [id])
-  member   Member @relation(fields: [memberId], references: [id])
-  invitedBy User  @relation(fields: [invitedByUserId], references: [id])
+  event     Event  @relation(fields: [eventId], references: [id])
+  member    Member @relation("MemberEventInvites", fields: [memberId], references: [id])
+  invitedBy User   @relation("UserEventInvites", fields: [invitedByUserId], references: [id])
 
   @@id([eventId, memberId])
   @@index([memberId])
