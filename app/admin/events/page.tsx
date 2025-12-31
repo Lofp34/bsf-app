@@ -41,6 +41,16 @@ export default async function EventsPage() {
         <p className="mt-2 text-sm text-[var(--muted)]">
           Visualisez les evenements planifies et leur statut.
         </p>
+        <p className="mt-2 text-sm text-[var(--muted)]">
+          Pour inviter des membres, utilisez l&apos;espace{" "}
+          <Link
+            href="/community/events"
+            className="font-semibold text-[var(--ink)] underline decoration-[var(--accent)] decoration-2 underline-offset-4"
+          >
+            Communaute &gt; Activites
+          </Link>
+          .
+        </p>
         <div className="mt-4 flex flex-wrap gap-3 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
           <span className="rounded-full border border-[var(--stroke)] bg-white px-3 py-1">
             Total: {events.length}

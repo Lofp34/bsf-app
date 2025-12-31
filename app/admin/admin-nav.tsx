@@ -18,6 +18,11 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/admin/users", label: "Utilisateurs", description: "Comptes" },
   { href: "/admin/events", label: "Evenements", description: "Agenda" },
   { href: "/admin/audit", label: "Journal", description: "Audit" },
+  {
+    href: "/community/recommendations",
+    label: "Communaute",
+    description: "Recommandations & activites",
+  },
 ];
 
 type Props = {
