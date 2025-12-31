@@ -1,5 +1,6 @@
 import { requireSessionUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
+import ProfileMemberCard from "./profile-member-card";
 
 export const dynamic = "force-dynamic";
 
@@ -21,8 +22,6 @@ export default async function CommunityProfilePage() {
       </main>
     );
   }
-
-  const member = user.member;
 
   return (
     <main className="mx-auto w-full max-w-4xl">
@@ -52,31 +51,7 @@ export default async function CommunityProfilePage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[var(--stroke)] bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-semibold">Fiche membre</h2>
-          <div className="mt-3 space-y-2 text-sm text-[var(--muted)]">
-            {member ? (
-              <>
-                <p>
-                  {member.firstname} {member.lastname}
-                </p>
-                <p>Societe: {member.company}</p>
-                <p>Email: {member.email ?? "Non renseigne"}</p>
-                <p>Telephone: {member.phone ?? "Non renseigne"}</p>
-                <p>
-                  Consentement contact:{" "}
-                  {member.consentShareContact ? "Oui" : "Non"}
-                </p>
-                <p>
-                  Consentement loisirs:{" "}
-                  {member.consentShareHobbies ? "Oui" : "Non"}
-                </p>
-              </>
-            ) : (
-              <p>Aucune fiche membre associee.</p>
-            )}
-          </div>
-        </div>
+        <ProfileMemberCard member={user.member} />
       </section>
     </main>
   );
