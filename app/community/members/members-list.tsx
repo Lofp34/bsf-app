@@ -81,9 +81,12 @@ export default function CommunityMembersList({ members }: Props) {
               </div>
             </div>
             <div className="flex flex-wrap gap-2 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-              <span className="rounded-full border border-[var(--stroke)] px-3 py-1">
-                Contact: {member.consentShareContact ? "Oui" : "Non"}
-              </span>
+              <Link
+                href={`/community/recommendations?recipient=${encodeURIComponent(member.id)}#nouvelle-recommandation`}
+                className="rounded-full border border-[var(--stroke)] px-3 py-2 text-xs uppercase tracking-[0.2em] text-[var(--muted)] transition hover:border-[var(--accent)]"
+              >
+                Donner recommandation
+              </Link>
             </div>
           </div>
           <div className="mt-4">
