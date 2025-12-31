@@ -17,23 +17,12 @@ type Props = {
   member: Member | null;
 };
 
-export default function ProfileMemberCard({ member }: Props) {
-  const [editing, setEditing] = useState(false);
-  const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(
-    null,
-  );
-  const [formState, setFormState] = useState<Member | null>(member);
+type Status = { type: "success" | "error"; message: string } | null;
 
-  if (!member || !formState) {
-    return (
-      <div className="rounded-2xl border border-[var(--stroke)] bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-semibold">Fiche membre</h2>
-        <p className="mt-3 text-sm text-[var(--muted)]">
-          Aucune fiche membre associee.
-        </p>
-      </div>
-    );
-  }
+function ProfileMemberEditor({ member }: { member: Member }) {
+  const [editing, setEditing] = useState(false);
+  const [status, setStatus] = useState<Status>(null);
+  const [formState, setFormState] = useState<Member>(member);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -236,4 +225,18 @@ export default function ProfileMemberCard({ member }: Props) {
       )}
     </div>
   );
+}
+
+export default function ProfileMemberCard({ member }: Props) {
+  if (!member) {
+    return (
+      <div className="rounded-2xl border border-[var(--stroke)] bg-white p-5 shadow-sm">
+        <h2 className="text-lg font-semibold">Fiche membre</h2>
+        <p className="mt-3 text-sm text-[var(--muted)]">
+          Aucune fiche membre associee.
+        </p>
+      </div>
+    );
+  }
+  return <ProfileMemberEditor member={member} />;
 }
