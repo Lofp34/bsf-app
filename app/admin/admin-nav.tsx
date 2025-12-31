@@ -14,6 +14,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/admin/status", label: "Etat", description: "KPI" },
   { href: "/admin/members", label: "Membres", description: "Annuaire" },
   { href: "/admin/invitations", label: "Invitations", description: "Acces" },
+  { href: "/admin/recommendations", label: "Recommandations", description: "Suivi" },
   { href: "/admin/users", label: "Utilisateurs", description: "Comptes" },
   { href: "/admin/events", label: "Evenements", description: "Agenda" },
   { href: "/admin/audit", label: "Journal", description: "Audit" },

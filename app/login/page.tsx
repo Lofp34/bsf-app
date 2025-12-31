@@ -21,14 +21,18 @@ export default function LoginPage() {
       body: JSON.stringify({ email, password }),
     });
 
+    const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
       setError(data.error ?? "Connexion impossible.");
       setLoading(false);
       return;
     }
 
-    router.push("/admin");
+    if (data?.user?.role === "ADMIN" || data?.user?.role === "SUPER_ADMIN") {
+      router.push("/admin");
+    } else {
+      router.push("/community/recommendations");
+    }
   }
 
   return (

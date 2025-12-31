@@ -18,6 +18,13 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour pi
   - Evenements /admin/events
   - Etat /admin/status
   - Journal d'audit /admin/audit
+- Espace communaute:
+  - Recommandations (fil communaute, envoyees, recues).
+  - Activites (liste, creation, details, RSVP).
+- Activites publiques / sur invitation avec capacite et suivi des participants.
+- Invitations d'activite par selection de membres (y compris sans compte).
+- Recommandations visibles par la communaute (texte prive).
+- Montant visible lorsque la recommandation est validee.
 - Creation de membre (admin) + invitation (admin/super admin).
 - Actions rapides:
   - Regenerer un lien d'invitation.
@@ -27,7 +34,7 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour pi
 - Seed de demo: `npm run seed:demo`.
 
 ## Perimetre (scope)
-- In: annuaire, invitations, comptes utilisateurs, evenements, recommandations (MVP).
+- In: annuaire, invitations, comptes utilisateurs, activites publiques/privees, recommandations (MVP).
 - Out: facturation, CRM externe, analytics avancees, mobile natif, SSO.
 
 ## Decisions prises
@@ -64,10 +71,15 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour pi
 - 2025-12-30: ajout du skill `project-status-keeper` et mise a jour du document maitre.
 - 2025-12-30: stabilisation Vercel (DIRECT_URL + retry migrations) et merge de l'admin MVP.
 - 2025-12-30: pagination + export CSV admin, demarrage CRUD evenements (roles).
+- 2025-12-30: CRUD evenements (creation/edition/annulation) avec roles merge.
+- 2025-12-30: emails d'invitation (SMTP) en cours.
+- 2025-12-30: choix de Brevo pour l'envoi d'emails (configuration a faire).
+- 2025-12-30: pivot MVP vers activites et recommandations communautaires.
+- 2025-12-30: espace communaute (recommandations + activites) et invitations ciblees.
 
 ## Prochaine etape (proposee)
 1) Pagination + export CSV sur les listes admin.
 2) Historique des modifications par membre (audit detaille).
-3) CRUD evenements (creation/edition/annulation) avec roles. (en cours)
-4) Notifications (email) pour invitations.
+3) Activites publiques/privees avec invitations et RSVP.
+4) Recommandations visibles par la communaute (texte prive).
 5) Tableau de bord KPI plus riche (tendances, activite).

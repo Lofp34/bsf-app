@@ -40,6 +40,11 @@ enum RsvpStatus {
   NOT_GOING
 }
 
+enum EventAudience {
+  PUBLIC
+  SELECTED
+}
+
 model Member {
   id                  String    @id @default(cuid())
   firstname           String
@@ -57,6 +62,7 @@ model Member {
   user            User?
   invitations     Invitation[]
   recommendations Recommendation[] @relation("RecipientRecommendations")
+  eventInvites    EventInvite[]   @relation("MemberEventInvites")
 
   @@index([lastname, firstname])
   @@index([company])
@@ -90,6 +96,7 @@ model User {
   hobbies             UserHobby[]
   events              Event[]
   eventRsvps          EventRsvp[]
+  invitedEventInvites EventInvite[]             @relation("UserEventInvites")
   sessions            Session[]
   auditLogs           AuditLog[]                    @relation("AuditActor")
 
@@ -233,6 +240,7 @@ model Event {
   location        String
   description     String
   capacity        Int?
+  audience        EventAudience @default(PUBLIC)
   status          EventStatus @default(PUBLISHED)
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
@@ -240,6 +248,7 @@ model Event {
 
   createdBy User        @relation(fields: [createdByUserId], references: [id])
   rsvps     EventRsvp[]
+  invites   EventInvite[]
 
   @@index([startAt])
   @@index([createdByUserId])
@@ -257,4 +266,18 @@ model EventRsvp {
 
   @@id([eventId, userId])
   @@index([userId])
+}
+
+model EventInvite {
+  eventId         String
+  memberId        String
+  invitedByUserId String
+  invitedAt       DateTime @default(now())
+
+  event     Event  @relation(fields: [eventId], references: [id])
+  member    Member @relation("MemberEventInvites", fields: [memberId], references: [id])
+  invitedBy User   @relation("UserEventInvites", fields: [invitedByUserId], references: [id])
+
+  @@id([eventId, memberId])
+  @@index([memberId])
 }

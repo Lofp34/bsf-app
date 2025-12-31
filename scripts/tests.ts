@@ -4,6 +4,9 @@ import {
   acceptInviteSchema,
   memberSchema,
   eventSchema,
+  eventCreateSchema,
+  recommendationSchema,
+  recommendationStatusSchema,
 } from "../lib/validation";
 import { hasRole, requireRole } from "../lib/rbac";
 
@@ -50,6 +53,29 @@ function testSchemas() {
     description: "Session de mise en relation",
   });
   assert(okEvent.success, "eventSchema should accept valid input");
+
+  const okEventCreate = eventCreateSchema.safeParse({
+    title: "Rencontre",
+    startAt: new Date().toISOString(),
+    location: "Montpellier",
+    description: "Session de mise en relation",
+    audience: "PUBLIC",
+  });
+  assert(okEventCreate.success, "eventCreateSchema should accept valid input");
+
+  const okRecommendation = recommendationSchema.safeParse({
+    recipientMemberId: "member-123",
+    recContactFirstname: "Lina",
+    recContactLastname: "Bernard",
+    text: "Recommandation forte pour un partenariat.",
+  });
+  assert(okRecommendation.success, "recommendationSchema should accept valid input");
+
+  const okStatus = recommendationStatusSchema.safeParse({
+    status: "VALIDATED",
+    revenueAmount: 1200,
+  });
+  assert(okStatus.success, "recommendationStatusSchema should accept valid input");
 }
 
 function testRbac() {
