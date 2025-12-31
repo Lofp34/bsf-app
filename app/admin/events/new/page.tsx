@@ -11,6 +11,16 @@ export default function EventCreatePage() {
             <p className="mt-2 text-sm text-[var(--muted)]">
               Publiez un evenement pour le reseau Business Sud de France.
             </p>
+            <p className="mt-2 text-sm text-[var(--muted)]">
+              Pour inviter des membres, passez par{" "}
+              <Link
+                href="/community/events/new"
+                className="font-semibold text-[var(--ink)] underline decoration-[var(--accent)] decoration-2 underline-offset-4"
+              >
+                Communaute &gt; Activites
+              </Link>
+              .
+            </p>
           </div>
           <Link
             href="/admin/events"

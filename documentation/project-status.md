@@ -65,6 +65,7 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour pi
 - `DATABASE_URL` pour l'app.
 - `DIRECT_URL` pour les migrations (evite les timeouts du pooler).
 - Build: `scripts/vercel-build.mjs` utilise `DIRECT_URL` si present.
+- Pages utilisant Prisma cote App Router marquees en `dynamic` pour eviter les prerender errors sans `DATABASE_URL`.
 
 ## Journal des evolutions
 - 2025-12-30: espace admin et navigation complete, audit, health check, actions rapides, doc de suivi.
@@ -76,6 +77,8 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour pi
 - 2025-12-30: choix de Brevo pour l'envoi d'emails (configuration a faire).
 - 2025-12-30: pivot MVP vers activites et recommandations communautaires.
 - 2025-12-30: espace communaute (recommandations + activites) et invitations ciblees.
+- 2025-12-30: creation activite en rendu dynamique pour eviter l'erreur Prisma au build.
+- 2025-12-30: navigation croisee admin/communaute pour clarifier les flux.
 
 ## Prochaine etape (proposee)
 1) Pagination + export CSV sur les listes admin.
