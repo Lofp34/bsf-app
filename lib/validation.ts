@@ -34,3 +34,25 @@ export const eventSchema = z.object({
   description: z.string().trim().min(4).max(2000),
   capacity: z.number().int().min(1).max(10000).optional().nullable(),
 });
+
+export const eventCreateSchema = eventSchema.extend({
+  audience: z.enum(["PUBLIC", "SELECTED"]),
+  inviteAll: z.boolean().optional().default(false),
+  inviteMemberIds: z.array(z.string()).optional().default([]),
+});
+
+export const recommendationSchema = z.object({
+  recipientMemberId: z.string(),
+  recContactFirstname: z.string().trim().min(1).max(120),
+  recContactLastname: z.string().trim().min(1).max(120),
+  recContactCompany: z.string().trim().max(160).optional().nullable(),
+  recContactEmail: z.string().email().optional().nullable(),
+  recContactPhone: z.string().trim().min(3).max(32).optional().nullable(),
+  text: z.string().trim().min(10).max(4000),
+});
+
+export const recommendationStatusSchema = z.object({
+  status: z.enum(["SENT", "IN_PROGRESS", "VALIDATED", "ABANDONED"]),
+  revenueAmount: z.number().min(0).optional().nullable(),
+  revenueCurrency: z.string().trim().max(8).optional().nullable(),
+});
