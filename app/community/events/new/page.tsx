@@ -2,6 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import CommunityEventForm from "../event-form";
 
+export const dynamic = "force-dynamic";
+
 export default async function CommunityEventCreatePage() {
   const members = await prisma.member.findMany({
     orderBy: { lastname: "asc" },
