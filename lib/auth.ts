@@ -8,6 +8,9 @@ import { UserRole } from "@prisma/client";
 
 const SESSION_COOKIE_NAME = process.env.SESSION_COOKIE_NAME ?? "bsf_session";
 const SESSION_TTL_DAYS = Number(process.env.SESSION_TTL_DAYS ?? "7");
+const CSRF_COOKIE_NAME = process.env.CSRF_COOKIE_NAME ?? "bsf_csrf";
+const SESSION_ROTATE_DAYS = Number(process.env.SESSION_ROTATE_DAYS ?? "3");
+const SESSION_IDLE_ROTATE_HOURS = Number(process.env.SESSION_IDLE_ROTATE_HOURS ?? "24");
 const MAX_FAILED_LOGINS = 5;
 const LOCK_MINUTES = 15;
 
@@ -35,7 +38,8 @@ export async function createSession(userId: string) {
     },
   });
 
-  cookies().set({
+  const cookieStore = cookies();
+  cookieStore.set({
     name: SESSION_COOKIE_NAME,
     value: token,
     httpOnly: true,
@@ -44,6 +48,8 @@ export async function createSession(userId: string) {
     path: "/",
     expires: expiresAt,
   });
+
+  setCsrfCookie(cookieStore, expiresAt);
 
   return { token, expiresAt };
 }
@@ -57,7 +63,8 @@ export async function revokeSession(token: string) {
 }
 
 export async function getSessionUser() {
-  const token = cookies().get(SESSION_COOKIE_NAME)?.value;
+  const cookieStore = cookies();
+  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   if (!token) return null;
 
   const tokenHash = hashToken(token);
@@ -74,10 +81,49 @@ export async function getSessionUser() {
 
   if (!session) return null;
 
-  await prisma.session.update({
-    where: { id: session.id },
-    data: { lastUsedAt: new Date() },
-  });
+  const now = new Date();
+  const shouldRotate = shouldRotateSession(session.createdAt, session.lastUsedAt);
+  if (shouldRotate) {
+    const newToken = generateToken();
+    const newTokenHash = hashToken(newToken);
+    const expiresAt = new Date(Date.now() + SESSION_TTL_DAYS * 24 * 60 * 60 * 1000);
+
+    await prisma.$transaction([
+      prisma.session.update({
+        where: { id: session.id },
+        data: { revokedAt: now },
+      }),
+      prisma.session.create({
+        data: {
+          userId: session.userId,
+          tokenHash: newTokenHash,
+          expiresAt,
+          lastUsedAt: now,
+        },
+      }),
+    ]);
+
+    cookieStore.set({
+      name: SESSION_COOKIE_NAME,
+      value: newToken,
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: expiresAt,
+    });
+
+    setCsrfCookie(cookieStore, expiresAt);
+  } else {
+    await prisma.session.update({
+      where: { id: session.id },
+      data: { lastUsedAt: now },
+    });
+
+    if (!cookieStore.get(CSRF_COOKIE_NAME)?.value) {
+      setCsrfCookie(cookieStore, session.expiresAt);
+    }
+  }
 
   return session.user;
 }
@@ -119,4 +165,27 @@ export async function clearLoginFailures(userId: string) {
       lockedUntil: null,
     },
   });
+}
+
+function setCsrfCookie(cookieStore: ReturnType<typeof cookies>, expiresAt: Date) {
+  const csrfToken = generateToken();
+  cookieStore.set({
+    name: CSRF_COOKIE_NAME,
+    value: csrfToken,
+    httpOnly: false,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    expires: expiresAt,
+  });
+}
+
+function shouldRotateSession(createdAt: Date, lastUsedAt: Date | null) {
+  const now = Date.now();
+  const createdAtMs = createdAt.getTime();
+  const lastUsedMs = (lastUsedAt ?? createdAt).getTime();
+  const rotateAfterMs = SESSION_ROTATE_DAYS * 24 * 60 * 60 * 1000;
+  const idleRotateMs = SESSION_IDLE_ROTATE_HOURS * 60 * 60 * 1000;
+
+  return now - createdAtMs > rotateAfterMs || now - lastUsedMs > idleRotateMs;
 }

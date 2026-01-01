@@ -23,12 +23,23 @@ export default async function AdminLayout({
   }
 
   const roleLabel = user.role.replace("_", " ");
+  const memberName = user.member
+    ? `${user.member.firstname} ${user.member.lastname}`
+    : user.authEmail;
+  const initials = user.member
+    ? `${user.member.firstname[0] ?? ""}${user.member.lastname[0] ?? ""}`.toUpperCase()
+    : user.authEmail.slice(0, 2).toUpperCase();
 
   return (
     <div className="min-h-screen">
       <div className="surface-grid min-h-screen">
         <div className="mx-auto grid min-h-screen max-w-6xl gap-6 px-6 py-10 lg:grid-cols-[280px_1fr]">
-          <AdminNav email={user.authEmail} roleLabel={roleLabel} />
+          <AdminNav
+            email={user.authEmail}
+            roleLabel={roleLabel}
+            memberName={memberName}
+            initials={initials}
+          />
           <div className="pb-10">
             <div className="mb-6 flex justify-end">
               <Link

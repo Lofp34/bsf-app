@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { csrfHeaders } from "@/app/components/csrf";
 
 type MemberOption = {
   id: string;
@@ -66,7 +67,7 @@ export default function InviteUserForm({ members, canInviteSuperAdmin }: Props) 
 
     const response = await fetch("/api/admin/invitations", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...csrfHeaders() },
       body: JSON.stringify({ email, memberId, role }),
     });
 

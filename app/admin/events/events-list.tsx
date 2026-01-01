@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { csrfHeaders } from "@/app/components/csrf";
 import Link from "next/link";
 
 type EventItem = {
@@ -63,6 +64,7 @@ export default function EventsList({ events }: Props) {
     setLoadingId(eventId);
     const response = await fetch(`/api/admin/events/${eventId}/cancel`, {
       method: "POST",
+      headers: { ...csrfHeaders() },
     });
     if (!response.ok) {
       setMessage("Annulation impossible. Rechargez la page.");

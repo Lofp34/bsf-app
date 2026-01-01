@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { csrfHeaders } from "@/app/components/csrf";
 import Link from "next/link";
 
 type EventItem = {
@@ -67,7 +68,7 @@ export default function CommunityEventsList({ events }: Props) {
     setLoadingId(eventId);
     const response = await fetch(`/api/events/${eventId}/rsvp`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...csrfHeaders() },
       body: JSON.stringify({ status }),
     });
     const data = await response.json().catch(() => null);

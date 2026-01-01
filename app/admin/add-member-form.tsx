@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { csrfHeaders } from "@/app/components/csrf";
 
 type MemberResult = {
   ok: boolean;
@@ -27,7 +28,7 @@ export default function AddMemberForm() {
 
     const response = await fetch("/api/admin/members", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...csrfHeaders() },
       body: JSON.stringify({
         firstname,
         lastname,

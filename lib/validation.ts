@@ -14,6 +14,7 @@ export const invitationSchema = z.object({
 export const acceptInviteSchema = z.object({
   token: z.string().min(10),
   password: z.string().min(8).max(128),
+  acceptTerms: z.literal(true),
 });
 
 export const memberSchema = z.object({

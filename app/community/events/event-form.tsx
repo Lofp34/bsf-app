@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { csrfHeaders } from "@/app/components/csrf";
 
 type MemberOption = {
   id: string;
@@ -80,7 +81,7 @@ export default function CommunityEventForm({
       mode === "create" ? "/api/events" : `/api/events/${eventId}`,
       {
         method: mode === "create" ? "POST" : "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...csrfHeaders() },
         body: JSON.stringify(
           mode === "create"
             ? {

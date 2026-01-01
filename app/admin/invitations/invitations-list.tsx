@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { csrfHeaders } from "@/app/components/csrf";
 
 type Invitation = {
   id: string;
@@ -68,6 +69,7 @@ export default function InvitationsList({ invitations }: Props) {
 
     const response = await fetch(`/api/admin/invitations/${invitationId}/resend`, {
       method: "POST",
+      headers: { ...csrfHeaders() },
     });
 
     const data = await response.json().catch(() => null);

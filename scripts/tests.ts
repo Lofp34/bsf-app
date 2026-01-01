@@ -35,6 +35,7 @@ function testSchemas() {
   const okAccept = acceptInviteSchema.safeParse({
     token: "token-123456",
     password: "password123",
+    acceptTerms: true,
   });
   assert(okAccept.success, "acceptInviteSchema should accept valid input");
 

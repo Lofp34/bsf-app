@@ -32,6 +32,11 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour pi
 - Journal d'audit pour les actions admin (creation membre, invitation, activation).
 - Health check: `GET /api/health`.
 - Seed de demo: `npm run seed:demo`.
+- Navigation croisee admin/communaute pour guider les parcours.
+- Personnalisation nav: prenom/nom, placeholder photo, bouton deconnexion.
+- Checklist de bienvenue a la premiere connexion (onboarding).
+- Acceptation d'invitation renforcee (validation token + conditions).
+- Rotation de session et protection CSRF.
 
 ## Perimetre (scope)
 - In: annuaire, invitations, comptes utilisateurs, activites publiques/privees, recommandations (MVP).
@@ -78,11 +83,16 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour pi
 - 2025-12-30: pivot MVP vers activites et recommandations communautaires.
 - 2025-12-30: espace communaute (recommandations + activites) et invitations ciblees.
 - 2025-12-30: creation activite en rendu dynamique pour eviter l'erreur Prisma au build.
+- 2025-12-30: clarifications de navigation admin <-> communaute.
 - 2025-12-30: navigation croisee admin/communaute pour clarifier les flux.
+- 2026-01-01: personnalisation nav (prenom/nom, placeholder photo, deconnexion).
+- 2026-01-01: checklist d'onboarding a la premiere connexion.
+- 2026-01-01: acceptation d'invitation renforcee (token + conditions).
+- 2026-01-01: rotation de session + protection CSRF.
+- 2026-01-01: tests npm test + lint OK.
 
 ## Prochaine etape (proposee)
-1) Pagination + export CSV sur les listes admin.
-2) Historique des modifications par membre (audit detaille).
-3) Activites publiques/privees avec invitations et RSVP.
-4) Recommandations visibles par la communaute (texte prive).
-5) Tableau de bord KPI plus riche (tendances, activite).
+1) Finaliser l'envoi d'emails (Brevo) pour invitations et notifications.
+2) Tableau de bord KPI MVP (activites, participants, recommandations).
+3) Clarifier les parcours utilisateur (landing + guidage).
+4) Durcir les notifications (preferences, digest).
