@@ -26,6 +26,16 @@ export default function RecommendationForm({ members }: Props) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const recipientFromQuery = searchParams.get("recipient");
+
+  useEffect(() => {
+    if (!recipientFromQuery) return;
+    const matched = members.find((member) => member.id === recipientFromQuery);
+    if (!matched) return;
+    setRecipientMemberId(matched.id);
+    setQuery(`${matched.firstname} ${matched.lastname} ${matched.company}`.trim());
+  }, [recipientFromQuery, members]);
 
   const filteredMembers = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -77,7 +87,10 @@ export default function RecommendationForm({ members }: Props) {
   }
 
   return (
-    <div className="rounded-2xl border border-[var(--stroke)] bg-white p-6 shadow-sm">
+    <div
+      id="nouvelle-recommandation"
+      className="rounded-2xl border border-[var(--stroke)] bg-white p-6 shadow-sm"
+    >
       <h2 className="text-xl font-semibold">Nouvelle recommandation</h2>
       <p className="mt-2 text-sm text-[var(--muted)]">
         Indiquez le membre receveur et le contact recommande.
