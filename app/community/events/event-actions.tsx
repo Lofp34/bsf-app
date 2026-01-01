@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { csrfHeaders } from "@/app/components/csrf";
 
 type Props = {
   eventId: string;
@@ -21,6 +22,7 @@ export default function EventActions({ eventId, canManage, status }: Props) {
 
     const response = await fetch(`/api/events/${eventId}/cancel`, {
       method: "POST",
+      headers: { ...csrfHeaders() },
     });
 
     if (!response.ok) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { csrfHeaders } from "@/app/components/csrf";
 
 type EventPayload = {
   title: string;
@@ -55,7 +56,7 @@ export default function EventForm({ mode, eventId, initial, status }: Props) {
       mode === "create" ? "/api/admin/events" : `/api/admin/events/${eventId}`,
       {
         method: mode === "create" ? "POST" : "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...csrfHeaders() },
         body: JSON.stringify(payload),
       },
     );

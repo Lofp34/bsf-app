@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import LogoutButton from "@/app/components/logout-button";
 
 type NavItem = {
   href: string;
@@ -28,9 +29,11 @@ const NAV_ITEMS: NavItem[] = [
 type Props = {
   email: string;
   roleLabel: string;
+  memberName: string;
+  initials: string;
 };
 
-export default function AdminNav({ email, roleLabel }: Props) {
+export default function AdminNav({ email, roleLabel, memberName, initials }: Props) {
   const pathname = usePathname();
 
   return (
@@ -65,12 +68,26 @@ export default function AdminNav({ email, roleLabel }: Props) {
         })}
       </nav>
 
-      <div className="mt-auto rounded-2xl border border-[var(--stroke)] bg-white px-4 py-4 text-sm">
-        <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-          Connecte
-        </p>
-        <p className="mt-2 text-sm font-semibold">{email}</p>
-        <p className="mt-1 text-xs text-[var(--muted)]">{roleLabel}</p>
+      <div className="mt-auto space-y-3 rounded-2xl border border-[var(--stroke)] bg-white px-4 py-4 text-sm">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--stroke)] bg-[var(--card)] text-sm font-semibold text-[var(--ink)]">
+            {initials}
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+              Connecte
+            </p>
+            <p className="mt-1 text-sm font-semibold">{memberName}</p>
+            <p className="mt-1 text-xs text-[var(--muted)]">{email}</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-between text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+          <span>{roleLabel}</span>
+          <span>Photo</span>
+        </div>
+        <LogoutButton
+          className="w-full rounded-2xl border border-[var(--stroke)] bg-white px-4 py-2 text-xs uppercase tracking-[0.3em] text-[var(--muted)] transition hover:border-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-60"
+        />
       </div>
     </aside>
   );

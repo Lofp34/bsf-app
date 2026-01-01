@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { csrfHeaders } from "@/app/components/csrf";
 
 export default function AcceptInviteForm() {
   const router = useRouter();
@@ -11,9 +12,13 @@ export default function AcceptInviteForm() {
   const [token, setToken] = useState(tokenFromQuery);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [tokenStatus, setTokenStatus] = useState<"idle" | "checking" | "valid" | "invalid">(
+    "idle",
+  );
 
   useEffect(() => {
     if (tokenFromQuery) {
@@ -21,9 +26,46 @@ export default function AcceptInviteForm() {
     }
   }, [tokenFromQuery]);
 
+  useEffect(() => {
+    if (!token || token.length < 10) {
+      setTokenStatus("idle");
+      return;
+    }
+    let cancelled = false;
+
+    async function validateToken() {
+      setTokenStatus("checking");
+      const response = await fetch(
+        `/api/auth/accept-invite/validate?token=${encodeURIComponent(token)}`,
+      );
+      if (!response.ok) {
+        if (!cancelled) {
+          setTokenStatus("invalid");
+          setError("Token invalide ou expire.");
+        }
+        return;
+      }
+      if (!cancelled) {
+        setTokenStatus("valid");
+        setError(null);
+      }
+    }
+
+    validateToken();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+
+    if (!acceptTerms) {
+      setError("Vous devez accepter les conditions.");
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("Les mots de passe ne correspondent pas.");
@@ -34,8 +76,8 @@ export default function AcceptInviteForm() {
 
     const response = await fetch("/api/auth/accept-invite", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, password }),
+      headers: { "Content-Type": "application/json", ...csrfHeaders() },
+      body: JSON.stringify({ token, password, acceptTerms }),
     });
 
     const data = await response.json().catch(() => null);
@@ -113,6 +155,26 @@ export default function AcceptInviteForm() {
                       placeholder="Collez le token ici"
                     />
                   </label>
+                  <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+                    <span
+                      className={`inline-flex h-2 w-2 rounded-full ${
+                        tokenStatus === "valid"
+                          ? "bg-emerald-500"
+                          : tokenStatus === "invalid"
+                            ? "bg-red-500"
+                            : "bg-[var(--stroke)]"
+                      }`}
+                    />
+                    <span>
+                      {tokenStatus === "checking"
+                        ? "Verification du token..."
+                        : tokenStatus === "valid"
+                          ? "Token valide"
+                          : tokenStatus === "invalid"
+                            ? "Token invalide"
+                            : "Verification requise"}
+                    </span>
+                  </div>
 
                   <label className="block text-sm">
                     <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
@@ -144,6 +206,19 @@ export default function AcceptInviteForm() {
                     />
                   </label>
 
+                  <label className="flex items-start gap-3 text-sm text-[var(--muted)]">
+                    <input
+                      type="checkbox"
+                      checked={acceptTerms}
+                      onChange={(event) => setAcceptTerms(event.target.checked)}
+                      className="mt-1 h-4 w-4 rounded border border-[var(--stroke)] text-[var(--accent)]"
+                    />
+                    <span>
+                      J&apos;accepte les conditions d&apos;utilisation et la politique de
+                      confidentialite.
+                    </span>
+                  </label>
+
                   {error && (
                     <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
                       {error}
@@ -152,7 +227,7 @@ export default function AcceptInviteForm() {
 
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || tokenStatus === "invalid"}
                     className="w-full rounded-2xl bg-[var(--accent)] px-6 py-3 text-sm uppercase tracking-[0.3em] text-white transition hover:bg-[var(--accent-deep)] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {loading ? "Activation..." : "Activer le compte"}

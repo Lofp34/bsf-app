@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { csrfHeaders } from "@/app/components/csrf";
 
 type MemberOption = {
   id: string;
@@ -55,7 +56,7 @@ export default function RecommendationForm({ members }: Props) {
 
     const response = await fetch("/api/recommendations", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...csrfHeaders() },
       body: JSON.stringify({
         recipientMemberId,
         recContactFirstname,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { csrfHeaders } from "@/app/components/csrf";
 
 type User = {
   id: string;
@@ -65,7 +66,7 @@ export default function UsersList({ users }: Props) {
 
     const response = await fetch(`/api/admin/users/${userId}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...csrfHeaders() },
       body: JSON.stringify({ action }),
     });
 

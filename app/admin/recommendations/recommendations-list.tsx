@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { csrfHeaders } from "@/app/components/csrf";
 
 type RecommendationItem = {
   id: string;
@@ -33,7 +34,7 @@ export default function RecommendationsList({ items }: Props) {
 
     const response = await fetch(`/api/recommendations/${id}/status`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...csrfHeaders() },
       body: JSON.stringify({
         status,
         revenueAmount: status === "VALIDATED" ? revenueAmount : null,
