@@ -37,6 +37,7 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour pi
 - Checklist de bienvenue a la premiere connexion (onboarding).
 - Acceptation d'invitation renforcee (validation token + conditions).
 - Rotation de session et protection CSRF.
+- Envoi d'emails via Brevo (invitations).
 
 ## Perimetre (scope)
 - In: annuaire, invitations, comptes utilisateurs, activites publiques/privees, recommandations (MVP).
@@ -49,10 +50,12 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour pi
 - Import Excel retire temporairement (creation manuelle + admin forms).
 - Document maitre maintenu par le skill `project-status-keeper`.
 - Retry automatique sur `prisma migrate deploy` en build (stabilite Vercel).
+- Envoi d'emails via API Brevo (pas SMTP).
 
 ## Risques / Blocages
 - Deploiement bloque si `DIRECT_URL` absent sur Vercel.
 - Locks Prisma en cas de deploys concurrents (attenue par retry, eviter les redeploys multiples).
+- Emails Bloques si l'expediteur/domaine n'est pas verifie dans Brevo.
 
 ## Architecture (essentiel)
 - Next.js App Router + TypeScript + Tailwind CSS.
@@ -90,9 +93,10 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour pi
 - 2026-01-01: acceptation d'invitation renforcee (token + conditions).
 - 2026-01-01: rotation de session + protection CSRF.
 - 2026-01-01: tests npm test + lint OK.
+- 2026-01-01: integration Brevo (emails d'invitation).
 
 ## Prochaine etape (proposee)
-1) Finaliser l'envoi d'emails (Brevo) pour invitations et notifications.
+1) Configurer Brevo (verification expediteur + variables Vercel).
 2) Tableau de bord KPI MVP (activites, participants, recommandations).
 3) Clarifier les parcours utilisateur (landing + guidage).
 4) Durcir les notifications (preferences, digest).
