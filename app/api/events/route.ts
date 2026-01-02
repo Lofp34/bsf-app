@@ -24,8 +24,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "INVALID_INPUT" }, { status: 422 });
   }
 
-  const { title, type, startAt, location, description, capacity, audience, inviteAll, inviteMemberIds } =
-    parsed.data;
+  const {
+    title,
+    type,
+    startAt,
+    location,
+    description,
+    capacity,
+    audience,
+    inviteAll,
+    inviteMemberIds,
+  } = parsed.data;
 
   const finalAudience = inviteAll ? "PUBLIC" : audience;
   if (finalAudience === "SELECTED" && inviteMemberIds.length === 0) {
@@ -45,8 +54,18 @@ export async function POST(request: Request) {
     },
   });
 
+  await prisma.eventRsvp.create({
+    data: {
+      eventId: event.id,
+      userId: user.id,
+      status: "GOING",
+    },
+  });
+
   if (finalAudience === "SELECTED") {
-    const uniqueInvites = Array.from(new Set(inviteMemberIds));
+    const uniqueInvites = Array.from(
+      new Set([user.memberId, ...inviteMemberIds]),
+    ).filter((id): id is string => Boolean(id));
     if (uniqueInvites.length > 0) {
       await prisma.eventInvite.createMany({
         data: uniqueInvites.map((memberId) => ({
