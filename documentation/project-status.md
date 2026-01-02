@@ -38,6 +38,7 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour pi
 - Acceptation d'invitation renforcee (validation token + conditions).
 - Rotation de session et protection CSRF.
 - Envoi d'emails via Brevo (invitations).
+- Notifications emails Brevo (invitations, activites, recommandations).
 
 ## Perimetre (scope)
 - In: annuaire, invitations, comptes utilisateurs, activites publiques/privees, recommandations (MVP).
@@ -94,6 +95,7 @@ Livrer un MVP mobile-first, fluide et professional, avec un espace admin pour pi
 - 2026-01-01: rotation de session + protection CSRF.
 - 2026-01-01: tests npm test + lint OK.
 - 2026-01-01: integration Brevo (emails d'invitation).
+- 2026-01-01: notifications Brevo (activites + recommandations).
 
 ## Prochaine etape (proposee)
 1) Configurer Brevo (verification expediteur + variables Vercel).
