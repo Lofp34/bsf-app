@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireSessionUser } from "@/lib/auth";
 import { eventCreateSchema } from "@/lib/validation";
 import { logAudit } from "@/lib/audit";
+import { buildEventInviteEmail, getAppUrl, sendBulkEmail } from "@/lib/email";
 import { UserRole } from "@prisma/client";
 
 export async function POST(request: Request) {
@@ -75,6 +76,27 @@ export async function POST(request: Request) {
         })),
         skipDuplicates: true,
       });
+
+      const appUrl = getAppUrl(request);
+      if (appUrl) {
+        const members = await prisma.member.findMany({
+          where: { id: { in: uniqueInvites } },
+          select: { email: true },
+        });
+        const emails = members
+          .map((member) => member.email)
+          .filter((email): email is string => Boolean(email));
+        const link = `${appUrl}/community/events/${event.id}`;
+
+        await sendBulkEmail(emails, () =>
+          buildEventInviteEmail({
+            title,
+            startAt: new Date(startAt),
+            location,
+            link,
+          }),
+        );
+      }
     }
   }
 

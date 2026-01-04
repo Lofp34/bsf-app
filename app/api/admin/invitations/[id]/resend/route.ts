@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireSessionUser } from "@/lib/auth";
 import { generateToken, hashToken } from "@/lib/crypto";
 import { logAudit } from "@/lib/audit";
+import { buildInvitationEmail, getAppUrl, sendEmail } from "@/lib/email";
 import { UserRole } from "@prisma/client";
 
 export async function POST(
@@ -61,8 +62,23 @@ export async function POST(
     },
   });
 
+  const appUrl = getAppUrl(request);
+  const inviteLink = appUrl ? `${appUrl}/accept-invite?token=${token}` : "";
+  let emailSent = false;
+  if (inviteLink) {
+    const inviteEmail = buildInvitationEmail(inviteLink);
+    const sent = await sendEmail({
+      to: invitation.email,
+      subject: inviteEmail.subject,
+      text: inviteEmail.text,
+      html: inviteEmail.html,
+    });
+    emailSent = sent.ok;
+  }
+
   return NextResponse.json({
     ok: true,
     token,
+    emailSent,
   });
 }
