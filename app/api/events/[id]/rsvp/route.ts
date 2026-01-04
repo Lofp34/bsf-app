@@ -46,6 +46,7 @@ export async function POST(
 
   if (
     event.audience === "SELECTED" &&
+    event.createdByUserId !== user.id &&
     !event.invites.some((invite) => invite.memberId === user.memberId)
   ) {
     return NextResponse.json({ error: "NOT_INVITED" }, { status: 403 });
